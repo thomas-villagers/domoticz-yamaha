@@ -1,6 +1,6 @@
-# Basic Python Plugin Example
+# Basic Python Plugin 
 #
-# Author: GizMoCuz
+# Author: thomas-villagers
 #
 """
 <plugin key="YamahaPlug" name="Yamaha AV Receiver" author="thomasvillagers" version="1.0.0" wikilink="http://www.domoticz.com/wiki/plugins/plugin.html" externallink="https://yamaha.com/products/audio_visual/av_receivers_amps/">
@@ -18,7 +18,6 @@
 """
 import Domoticz
 import base64
-
 
 class BasePlugin:
     enabled = False
@@ -41,7 +40,7 @@ class BasePlugin:
             Domoticz.Device(Name="Volume",  Unit=2, Type=244, Subtype=73, Switchtype=7,  Image=8).Create()
             LevelActions= "LevelActions:"+stringToBase64("||||")+";"
             LevelNames= "LevelNames:"+stringToBase64("Off|HDMI1|HDMI2|HDMI3|HDMI4")+";"
-            Other= "LevelOffHidden:ZmFsc2U=;SelectorStyle:MA=="
+            Other= "LevelOffHidden:ZmFsc2U=;SelectorStyle:MA==" # true is "dHJ1ZQ==", 1 is "MQ=="
             Options=LevelActions+LevelNames+Other
             Domoticz.Device(Name="Source", Unit=3, TypeName="Selector Switch", Options=Options).Create()
         
@@ -86,7 +85,6 @@ class BasePlugin:
     def onCommand(self, Unit, Command, Level, Hue):
         Domoticz.Debug("onCommand called for Unit " + str(Unit) + ": Parameter '" + str(Command) + "', Level: " + str(Level))
         if (Unit == 1):
-            Domoticz.Debug("Todo: Send on/off") 
             if (Command == "Off"):
                 UpdateDevice(1,0,Devices[1].sValue)
                 Domoticz.Send("@MAIN:PWR=Standby\r\n")
@@ -114,7 +112,7 @@ class BasePlugin:
     def onDisconnect(self):
         Domoticz.Debug("onDisconnect called")
         self.isConnected = False 
-        UpdateDevice(1,0,"0")
+        UpdateDevice(1,0,"")
         UpdateDevice(2,0,Devices[2].sValue)
         UpdateDevice(3,0,Devices[3].sValue)
 
@@ -179,7 +177,6 @@ def UpdateDevice(Unit, nValue, sValue):
             Domoticz.Log("Update "+str(nValue)+":'"+str(sValue)+"' ("+Devices[Unit].Name+")")
     return
 
-
     # Generic helper functions
 def DumpConfigToLog():
     for x in Parameters:
@@ -194,7 +191,6 @@ def DumpConfigToLog():
         Domoticz.Debug("Device sValue:   '" + Devices[x].sValue + "'")
         Domoticz.Debug("Device LastLevel: " + str(Devices[x].LastLevel))
     return
-
 
 def stringToBase64(s):
     return base64.b64encode(s.encode('utf-8')).decode("utf-8")
