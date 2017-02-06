@@ -3,7 +3,7 @@
 # Author: GizMoCuz
 #
 """
-<plugin key="YamahaPlug" name="Yamaha AV Receiver" author="thomasvillagers" version="1.0.0" wikilink="http://www.domoticz.com/wiki/plugins/plugin.html" externallink="https://www.google.com/">
+<plugin key="YamahaPlug" name="Yamaha AV Receiver" author="thomasvillagers" version="1.0.0" wikilink="http://www.domoticz.com/wiki/plugins/plugin.html" externallink="https://yamaha.com/products/audio_visual/av_receivers_amps/">
     <params>
      <param field="Address" label="IP Address" width="200px" required="true" default="127.0.0.1"/>
      <param field="Port" label="Port" width="50px" required="true" default="50000"/>
