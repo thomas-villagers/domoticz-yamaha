@@ -81,15 +81,19 @@ class BasePlugin:
             s = arrData[1]
             inp = int(s[-1:])
             UpdateDevice(3,2,str(inp*10))
+        elif (arrData[0] == "@MAIN:SOUNDPRG"):
+            UpdateDevice(1,1, arrData[1])
 
     def onCommand(self, Unit, Command, Level, Hue):
         Domoticz.Debug("onCommand called for Unit " + str(Unit) + ": Parameter '" + str(Command) + "', Level: " + str(Level))
+        if (self.isConnected == False):
+            Domoticz.Connect()
+            return
         if (Unit == 1):
             if (Command == "Off"):
-                UpdateDevice(1,0,Devices[1].sValue)
+                UpdateDevice(1,0,Devices[1].sValue) # TODO remove
                 Domoticz.Send("@MAIN:PWR=Standby\r\n")
             elif (Command == "On"): 
-                UpdateDevice(1,1,Devices[1].sValue)
                 Domoticz.Send("@MAIN:PWR=On\r\n")
         elif (Unit == 2): 
             if (Command == "Set Level"): 
@@ -98,10 +102,8 @@ class BasePlugin:
                 Domoticz.Send("@MAIN:VOL="+str(volumeToSend)+"\r\n")
             elif (Command == "Off"): 
                 Domoticz.Send("@MAIN:MUTE=On\r\n")
-                UpdateDevice(2,0,Devices[2].sValue)
             elif (Command == "On"): 
                 Domoticz.Send("@MAIN:MUTE=Off\r\n")
-                UpdateDevice(2,2,Devices[2].sValue)
         elif (Unit == 3): 
             input = str(int(int(Level)/10))
             Domoticz.Send("@MAIN:INP=HDMI" + input + "\r\n")
