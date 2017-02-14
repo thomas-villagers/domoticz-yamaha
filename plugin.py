@@ -24,7 +24,7 @@ class BasePlugin:
     isConnected = True
     outstandingPings = 0
     nextConnect = 0
-    commandArray = ["@MAIN:VOL=?", "@MAIN:INP=?", "@MAIN:MUTE=?"]
+    commandArray = ["@MAIN:VOL=?", "@MAIN:INP=?", "@MAIN:MUTE=?", "@MAIN:SOUNDPRG=?"]
     commandIndex = 0 
 
     def __init__(self):
@@ -71,7 +71,7 @@ class BasePlugin:
         if (arrData[0] == "@MAIN:VOL"):
             vol = float(arrData[1])
             sliderValue = int(vol*5/4 + 100)
-            UpdateDevice(2, 2, str(sliderValue))
+            UpdateDevice(2, Devices[2].nValue, str(sliderValue))
         elif (arrData[0] == "@MAIN:MUTE"): 
             if (arrData[1] == "Off"):
                 UpdateDevice(2, 2, Devices[2].sValue)
