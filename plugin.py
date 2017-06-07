@@ -44,15 +44,18 @@ class BasePlugin:
             Options=LevelActions+LevelNames+Other
             Domoticz.Device(Name="Source", Unit=3, TypeName="Selector Switch", Options=Options).Create()
         
-        Domoticz.Transport("TCP/IP", Parameters["Address"], Parameters["Port"])
-        Domoticz.Protocol("Line")
-        Domoticz.Connect()
+#        Domoticz.Transport("TCP/IP", Parameters["Address"], Parameters["Port"])  ## obsolete 
+#        Domoticz.Protocol("Line")  # obsolete 
+#        Domoticz.Connect()  # obsolete 
+
+        self.connection = Domoticz.Connection(Name="Yamaha connection", Transport="TCP/IP", Protocol="Line", Address=Parameters["Address"], Port=Parameters["Port"])
+        self.connection.Connect()
         Domoticz.Heartbeat(20)
 
     def onStop(self):
         Domoticz.Log("onStop called")
 
-    def onConnect(self, Status, Description):
+    def onConnect(self, Connection, Status, Description):
         Domoticz.Debug("onConnect called. Status: " + str(Status))
         if (Status == 0): 
           self.isConnected = True
@@ -61,7 +64,7 @@ class BasePlugin:
         else: 
           self.isConnected = False
 
-    def onMessage(self, Data, Status, Extra):
+    def onMessage(self, Connection, Data, Status, Extra):
         Domoticz.Debug("onMessage called")
         self.outstandingPings = self.outstandingPings - 1
         strData = Data.decode("utf-8", "ignore")
@@ -87,31 +90,31 @@ class BasePlugin:
     def onCommand(self, Unit, Command, Level, Hue):
         Domoticz.Debug("onCommand called for Unit " + str(Unit) + ": Parameter '" + str(Command) + "', Level: " + str(Level))
         if (self.isConnected == False):
-            Domoticz.Connect()
+            self.connection.Connect() 
             return
         if (Unit == 1):
             if (Command == "Off"):
                 UpdateDevice(1,0,Devices[1].sValue) # TODO remove
-                Domoticz.Send("@MAIN:PWR=Standby\r\n")
+                self.connection.Send("@MAIN:PWR=Standby\r\n")
             elif (Command == "On"): 
-                Domoticz.Send("@MAIN:PWR=On\r\n")
+               self.connection.Send("@MAIN:PWR=On\r\n")
         elif (Unit == 2): 
             if (Command == "Set Level"): 
                 volume = int(Level)*4/5 - 80
                 volumeToSend = round(2*volume)/2
-                Domoticz.Send("@MAIN:VOL="+str(volumeToSend)+"\r\n")
+                self.connection.Send("@MAIN:VOL="+str(volumeToSend)+"\r\n") 
             elif (Command == "Off"): 
-                Domoticz.Send("@MAIN:MUTE=On\r\n")
+                self.connection.Send("@MAIN:MUTE=On\r\n") 
             elif (Command == "On"): 
-                Domoticz.Send("@MAIN:MUTE=Off\r\n")
+                self.connection.Send("@MAIN:MUTE=Off\r\n") 
         elif (Unit == 3): 
             input = str(int(int(Level)/10))
-            Domoticz.Send("@MAIN:INP=HDMI" + input + "\r\n")
+            self.connection.Send("@MAIN:INP=HDMI" + input + "\r\n") 
 
     def onNotification(self, Data):
         Domoticz.Debug("onNotification: " + str(Data))
 
-    def onDisconnect(self):
+    def onDisconnect(self, Connection):
         Domoticz.Debug("onDisconnect called")
         self.isConnected = False 
         UpdateDevice(1,0,"")
@@ -123,10 +126,10 @@ class BasePlugin:
         if (self.isConnected == True):
             if (self.outstandingPings > 6):
                 Domoticz.Debug("Missed more than 6 pings - disconnect")
-                Domoticz.Disconnect()
+                self.connection.Disconnect()  # obsolete 
                 self.nextConnect = 0
             else:   
-                Domoticz.Send(self.commandArray[self.commandIndex] + "\r\n")
+                self.connection.Send(self.commandArray[self.commandIndex] + "\r\n")
                 self.commandIndex = (self.commandIndex + 1 ) % len(self.commandArray)
                 self.outstandingPings = self.outstandingPings + 1
         else: 
@@ -134,7 +137,7 @@ class BasePlugin:
             self.nextConnect = self.nextConnect - 1
             if (self.nextConnect <= 0):
                 self.nextConnect = 3
-                Domoticz.Connect()
+                self.connection.Connect()  # obsolete 
 
 global _plugin
 _plugin = BasePlugin()
@@ -147,13 +150,13 @@ def onStop():
     global _plugin
     _plugin.onStop()
 
-def onConnect(Status, Description):
+def onConnect(Connection, Status, Description):
     global _plugin
-    _plugin.onConnect(Status, Description)
+    _plugin.onConnect(Connection, Status, Description)
 
-def onMessage(Data, Status, Extra):
+def onMessage(Connection, Data, Status, Extra):
     global _plugin
-    _plugin.onMessage(Data, Status, Extra)
+    _plugin.onMessage(Connection, Data, Status, Extra)
 
 def onCommand(Unit, Command, Level, Hue):
     global _plugin
@@ -163,9 +166,9 @@ def onNotification(Data):
     global _plugin
     _plugin.onNotification(Data)
 
-def onDisconnect():
+def onDisconnect(Connection):
     global _plugin
-    _plugin.onDisconnect()
+    _plugin.onDisconnect(Connection)
 
 def onHeartbeat():
     global _plugin
