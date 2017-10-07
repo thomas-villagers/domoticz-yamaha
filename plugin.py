@@ -35,18 +35,29 @@ class BasePlugin:
         if Parameters["Mode6"] == "Debug":
            Domoticz.Debugging(1)
         Domoticz.Debug("onStart called")
-        if (len(Devices) == 0):
-            Domoticz.Device(Name="Status",  Unit=1, Type=17,  Switchtype=17).Create()          
-            Domoticz.Device(Name="Volume",  Unit=2, Type=244, Subtype=73, Switchtype=7,  Image=8).Create()
-            LevelActions= "LevelActions:"+stringToBase64("||||")+";"
-            LevelNames= "LevelNames:"+stringToBase64("Off|HDMI1|HDMI2|HDMI3|HDMI4")+";"
-            Other= "LevelOffHidden:ZmFsc2U=;SelectorStyle:MA==" # true is "dHJ1ZQ==", 1 is "MQ=="
-            Options=LevelActions+LevelNames+Other
-            Domoticz.Device(Name="Source", Unit=3, TypeName="Selector Switch", Options=Options).Create()
-        
-#        Domoticz.Transport("TCP/IP", Parameters["Address"], Parameters["Port"])  ## obsolete 
-#        Domoticz.Protocol("Line")  # obsolete 
-#        Domoticz.Connect()  # obsolete 
+        if 1 not in Devices: 
+            Domoticz.Debug("Create Status Device")
+            Domoticz.Device(Name="Status",  Unit=1, Type=17,  Switchtype=17, Used=1).Create()          
+        if 2 not in Devices: 
+            Domoticz.Debug("Create Volume Device")
+            Domoticz.Device(Name="Volume",  Unit=2, Type=244, Subtype=73, Switchtype=7,  Image=8, Used=1).Create()
+        if 3 not in Devices: 
+            Domoticz.Debug("Create HDMI Device")
+            Options = { "LevelActions" : "|||||||",
+                        "LevelNames"   : "Off|HDMI1|HDMI2|HDMI3|HDMI4|HDMI5|HDMI6|HDMI7",
+                        "LevelOffHidden" : "true",
+                        "SelectorStyle" : "0" 
+                      }
+            Domoticz.Device(Name="Source", Unit=3, TypeName="Selector Switch", Switchtype=18, Options=Options, Used=1).Create()
+        if 4 not in Devices:
+            Domoticz.Debug("Create AV Device")
+            Options = { "LevelActions" : "||||||",
+                        "LevelNames"   : "Off|AV1|AV2|AV3|AV4|AV5|AV6",
+                        "LevelOffHidden" : "true",
+                        "SelectorStyle" : "0"
+                      }
+            Domoticz.Device(Name="AV Source", Unit=4, TypeName="Selector Switch", Switchtype=18, Options=Options, Used=1).Create() 
+
 
         self.connection = Domoticz.Connection(Name="Yamaha connection", Transport="TCP/IP", Protocol="Line", Address=Parameters["Address"], Port=Parameters["Port"])
         self.connection.Connect()
@@ -64,7 +75,7 @@ class BasePlugin:
         else: 
           self.isConnected = False
 
-    def onMessage(self, Connection, Data, Status, Extra):
+    def onMessage(self, Connection, Data):
         Domoticz.Debug("onMessage called")
         self.outstandingPings = self.outstandingPings - 1
         strData = Data.decode("utf-8", "ignore")
@@ -83,9 +94,15 @@ class BasePlugin:
         elif (arrData[0] == "@MAIN:INP"): 
             s = arrData[1]
             inp = int(s[-1:])
-            UpdateDevice(3,2,str(inp*10))
+            if (s.startswith("HDMI")):
+              UpdateDevice(3,2,str(inp*10))
+              UpdateDevice(4,2,"0")
+            elif (s.startswith("AV")):
+              UpdateDevice(4,2,str(inp*10))  
+              UpdateDevice(3,2,"0")
         elif (arrData[0] == "@MAIN:SOUNDPRG"):
             UpdateDevice(1,1, arrData[1])
+
 
     def onCommand(self, Unit, Command, Level, Hue):
         Domoticz.Debug("onCommand called for Unit " + str(Unit) + ": Parameter '" + str(Command) + "', Level: " + str(Level))
@@ -110,6 +127,9 @@ class BasePlugin:
         elif (Unit == 3): 
             input = str(int(int(Level)/10))
             self.connection.Send("@MAIN:INP=HDMI" + input + "\r\n") 
+        elif (Unit == 4):
+            input = str(int(int(Level)/10))
+            self.connection.Send("@MAIN:INP=AV" + input + "\r\n")
 
     def onNotification(self, Data):
         Domoticz.Debug("onNotification: " + str(Data))
@@ -154,9 +174,9 @@ def onConnect(Connection, Status, Description):
     global _plugin
     _plugin.onConnect(Connection, Status, Description)
 
-def onMessage(Connection, Data, Status, Extra):
+def onMessage(Connection, Data):
     global _plugin
-    _plugin.onMessage(Connection, Data, Status, Extra)
+    _plugin.onMessage(Connection, Data)
 
 def onCommand(Unit, Command, Level, Hue):
     global _plugin
