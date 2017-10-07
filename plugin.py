@@ -140,6 +140,7 @@ class BasePlugin:
         UpdateDevice(1,0,"")
         UpdateDevice(2,0,Devices[2].sValue)
         UpdateDevice(3,0,Devices[3].sValue)
+        UpdateDevice(4,0,Devices[4].sValue)
 
     def onHeartbeat(self):
         Domoticz.Debug("onHeartbeat called. Connected: " + str(self.isConnected))
