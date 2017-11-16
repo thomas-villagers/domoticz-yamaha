@@ -24,8 +24,7 @@ class BasePlugin:
     isConnected = True
     outstandingPings = 0
     nextConnect = 0
-    commandArray = ["@MAIN:VOL=?", "@MAIN:INP=?", "@MAIN:MUTE=?", "@MAIN:SOUNDPRG=?"]
-    commandIndex = 0 
+    commandArray = ["@MAIN:PWR=?", "@MAIN:VOL=?", "@MAIN:INP=?", "@MAIN:MUTE=?", "@MAIN:SOUNDPRG=?"]
 
     def __init__(self):
         #self.var = 123
@@ -70,7 +69,6 @@ class BasePlugin:
         Domoticz.Debug("onConnect called. Status: " + str(Status))
         if (Status == 0): 
           self.isConnected = True
-          UpdateDevice(1,1,"")
           self.onHeartbeat()
         else: 
           self.isConnected = False
@@ -79,30 +77,35 @@ class BasePlugin:
         Domoticz.Debug("onMessage called")
         self.outstandingPings = self.outstandingPings - 1
         strData = Data.decode("utf-8", "ignore")
-        arrData = strData.split('=')
-        for x in arrData:
-            Domoticz.Debug(x)
-        if (arrData[0] == "@MAIN:VOL"):
-            vol = float(arrData[1])
-            sliderValue = int(vol*5/4 + 100)
-            UpdateDevice(2, Devices[2].nValue, str(sliderValue))
-        elif (arrData[0] == "@MAIN:MUTE"): 
-            if (arrData[1] == "Off"):
-                UpdateDevice(2, 2, Devices[2].sValue)
-            elif (arrData[1] == "On"): 
-                UpdateDevice(2, 0, Devices[2].sValue)
-        elif (arrData[0] == "@MAIN:INP"): 
-            s = arrData[1]
-            inp = int(s[-1:])
-            if (s.startswith("HDMI")):
-              UpdateDevice(3,2,str(inp*10))
-              UpdateDevice(4,2,"0")
-            elif (s.startswith("AV")):
-              UpdateDevice(4,2,str(inp*10))  
-              UpdateDevice(3,2,"0")
-        elif (arrData[0] == "@MAIN:SOUNDPRG"):
-            UpdateDevice(1,1, arrData[1])
-
+        for line in strData.splitlines():
+            arrData = line.split('=')
+            for x in arrData:
+                Domoticz.Debug(x)
+            if (arrData[0] == "@MAIN:PWR"):
+                if (arrData[1] == "On"):
+                    UpdateDevice(1, 1, Devices[1].sValue)
+                elif (arrData[1] == "Standby"):
+                    UpdateDevice(1, 0, Devices[1].sValue)
+            elif (arrData[0] == "@MAIN:VOL"):
+                vol = float(arrData[1])
+                sliderValue = int(vol*5/4 + 100)
+                UpdateDevice(2, Devices[2].nValue, str(sliderValue))
+            elif (arrData[0] == "@MAIN:MUTE"):
+                if (arrData[1] == "Off"):
+                    UpdateDevice(2, 2, Devices[2].sValue)
+                elif (arrData[1] == "On"):
+                    UpdateDevice(2, 0, Devices[2].sValue)
+            elif (arrData[0] == "@MAIN:INP"):
+                s = arrData[1]
+                inp = int(s[-1:])
+                if (s.startswith("HDMI")):
+                  UpdateDevice(3,2,str(inp*10))
+                  UpdateDevice(4,2,"0")
+                elif (s.startswith("AV")):
+                  UpdateDevice(4,2,str(inp*10))
+                  UpdateDevice(3,2,"0")
+            elif (arrData[0] == "@MAIN:SOUNDPRG"):
+                UpdateDevice(1, Devices[1].nValue, arrData[1])
 
     def onCommand(self, Unit, Command, Level, Hue):
         Domoticz.Debug("onCommand called for Unit " + str(Unit) + ": Parameter '" + str(Command) + "', Level: " + str(Level))
@@ -111,7 +114,6 @@ class BasePlugin:
             return
         if (Unit == 1):
             if (Command == "Off"):
-                UpdateDevice(1,0,Devices[1].sValue) # TODO remove
                 self.connection.Send("@MAIN:PWR=Standby\r\n")
             elif (Command == "On"): 
                self.connection.Send("@MAIN:PWR=On\r\n")
@@ -137,10 +139,6 @@ class BasePlugin:
     def onDisconnect(self, Connection):
         Domoticz.Debug("onDisconnect called")
         self.isConnected = False 
-        UpdateDevice(1,0,"")
-        UpdateDevice(2,0,Devices[2].sValue)
-        UpdateDevice(3,0,Devices[3].sValue)
-        UpdateDevice(4,0,Devices[4].sValue)
 
     def onHeartbeat(self):
         Domoticz.Debug("onHeartbeat called. Connected: " + str(self.isConnected))
@@ -150,9 +148,9 @@ class BasePlugin:
                 self.connection.Disconnect()  # obsolete 
                 self.nextConnect = 0
             else:   
-                self.connection.Send(self.commandArray[self.commandIndex] + "\r\n")
-                self.commandIndex = (self.commandIndex + 1 ) % len(self.commandArray)
-                self.outstandingPings = self.outstandingPings + 1
+                self.outstandingPings = self.outstandingPings + len(self.commandArray)
+                for command in self.commandArray:
+                    self.connection.Send(command + "\r\n")
         else: 
             self.outstandingPings = 0
             self.nextConnect = self.nextConnect - 1
