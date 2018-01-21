@@ -97,12 +97,11 @@ class BasePlugin:
                     UpdateDevice(2, 0, Devices[2].sValue)
             elif (arrData[0] == "@MAIN:INP"):
                 s = arrData[1]
-                inp = int(s[-1:])
                 if (s.startswith("HDMI")):
-                  UpdateDevice(3,2,str(inp*10))
+                  UpdateDevice(3,2,str(int(s[-1:])*10))
                   UpdateDevice(4,2,"0")
-                elif (s.startswith("AV")):
-                  UpdateDevice(4,2,str(inp*10))
+                elif (s.startswith("AV")):  
+                  UpdateDevice(4,2,str(int(s[-1:])*10))
                   UpdateDevice(3,2,"0")
             elif (arrData[0] == "@MAIN:SOUNDPRG"):
                 UpdateDevice(1, Devices[1].nValue, arrData[1])
