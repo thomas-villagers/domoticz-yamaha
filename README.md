@@ -15,8 +15,9 @@ git clone https://github.com/stas-demydiuk/domoticz-yamaha-plugin yamaha-av-rece
 ## Devices
 
 Plugin creates 6 devices:
+
 | Name         | Description                                                              |
-|--------------|--------------------------------------------------------------------------|
+| :---         | :---                                                                     |
 | Volume Main  | Controls the volume of main zone and allows to switch it ON/OFF          |
 | Input Main   | Controls the input of main zone                                          |
 | Volume Zone2 | Controls the volume of zone2 and allows to switch it ON/OFF              |
