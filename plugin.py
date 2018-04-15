@@ -61,6 +61,7 @@ class BasePlugin:
     outstandingPings = 0
     nextConnect = 0
     commandArray = ["@MAIN:PWR=?", "@ZONE2:PWR=?", "@MAIN:SOUNDPRG=?", "@MAIN:VOL=?", "@MAIN:INP=?", "@MAIN:MUTE=?", "@ZONE2:VOL=?", "@ZONE2:MUTE=?", "@ZONE2:INP=?", "@SYS:PARTY=?"]
+    iconName = 'Yamaha'
 
     def __init__(self):
         #self.var = 123
@@ -78,21 +79,26 @@ class BasePlugin:
             "SelectorStyle" : "1" 
         }
 
+        if self.iconName not in Images:
+            Domoticz.Image('icons.zip').Create()
+        
+        iconID = Images[self.iconName].ID
+
         if 1 not in Devices: 
             Domoticz.Debug("Create Party Status Device")
-            Domoticz.Device(Name="Party Status", Unit=1, Type=17,  Switchtype=17, Used=1).Create()          
+            Domoticz.Device(Name="Party Status", Unit=1, Type=17,  Switchtype=17, Image=iconID, Used=1).Create()          
         if 2 not in Devices: 
             Domoticz.Debug("Create Volume Device - Main")
             Domoticz.Device(Name="Volume Main", Unit=2, Type=244, Subtype=73, Switchtype=7, Image=8, Used=1).Create()
         if 3 not in Devices: 
             Domoticz.Debug("Create Input Device - Main")
-            Domoticz.Device(Name="Input Main", Unit=3, TypeName="Selector Switch", Options=inputControlOptions, Used=1).Create()
+            Domoticz.Device(Name="Input Main", Unit=3, TypeName="Selector Switch", Options=inputControlOptions, Image=iconID, Used=1).Create()
         if 4 not in Devices: 
             Domoticz.Debug("Create Volume Device - Zone2")
             Domoticz.Device(Name="Volume Zone2", Unit=4, Type=244, Subtype=73, Switchtype=7, Image=8, Used=1).Create()
         if 5 not in Devices: 
             Domoticz.Debug("Create Input Device - Zone2")
-            Domoticz.Device(Name="Input Zone2", Unit=5, TypeName="Selector Switch", Options=inputControlOptions, Used=1).Create()        
+            Domoticz.Device(Name="Input Zone2", Unit=5, TypeName="Selector Switch", Options=inputControlOptions, Image=iconID, Used=1).Create()        
         if 6 not in Devices: 
             Domoticz.Debug("Create Volume Device - Party")
             Domoticz.Device(Name="Volume Party", Unit=6, Type=244, Subtype=73, Switchtype=7, Image=8, Used=1).Create()
