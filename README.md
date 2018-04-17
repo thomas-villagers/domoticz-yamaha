@@ -14,13 +14,29 @@ git clone https://github.com/stas-demydiuk/domoticz-yamaha-plugin yamaha-av-rece
 
 ## Devices
 
-Plugin creates 6 devices:
+Plugin creates 4 devices for Main Zone:
 
 | Name         | Description                                                              |
 | :---         | :---                                                                     |
-| Volume Main  | Controls the volume of main zone and allows to switch it ON/OFF          |
-| Input Main   | Controls the input of main zone                                          |
-| Volume Zone2 | Controls the volume of zone2 and allows to switch it ON/OFF              |
-| Input Zone2  | Controls the input of zone2                                              |
-| Party Status | Shows and switches Party mode ON/Off and shows Surround decode           |
-| Volume Party | Controls the volume of both zones and allows to switch Party mode ON/OFF |
+| Media Player | Allows to switch main zone ON/OFF                                        |
+| Volume       | Controls the volume of main zone and allows to to MUTE/UNMUTE            |
+| Input        | Controls the input of main zone                                          |
+| DSP Program  | Allows to set DSP program for main zone                                  |
+
+3 devices for each additional zone (Zone2, Zone3) if selected in options:
+
+| Name         | Description                                                              |
+| :---         | :---                                                                     |
+| Media Player | Allows to switch zone ON/OFF                                             |
+| Volume       | Controls the volume of zone and allows to MUTE/UNMUTE                    |
+| Input        | Controls the input of zone                                               |
+
+If there is at least one additional zone, plugin creates device to control Party Mode (mode, when all zones synchronously play signal from Main Zone)
+
+| Name         | Description                                                              |
+| :---         | :---                                                                     |
+| Party        | Allows to switch Party Mode ON/OFF                                       |
+
+## TODO
+
+[-] Implement scenes selection support
