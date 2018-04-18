@@ -14,6 +14,8 @@
           <option label="Main zone + Zone2 + Zone3" value="3"/>
        </options>
      </param>
+     <param field="Mode3" label="Input names" width="400px" required="true" default="Off|SIRIUS|TUNER|HDMI1|HDMI2|HDMI3|HDMI4|HDMI5|HDMI6|HDMI7|AV1|AV2|AV3|AV4|AV5|AV6|V-AUX|AUDIO1|AUDIO2|DOCK|iPod|Bluetooth|UAW|NET|Rhapsody|SIRIUS InternetRadio|Pandora|Napster|PC|NET RADIO|USB|iPod (USB)"/>
+     <param field="Mode4" label="DSP Programs" width="400px" required="true" default="Off|Hall in Munich|Hall in Vienna|Chamber|Cellar Club|The Roxy Theatre|The Bottom Line|Sports|Spotify|Action Game|Roleplaying Game|Music Video|Standard|Spectacle|Sci-Fi|Adventure|Drama|Mono Movie|2ch Stereo|7ch Stereo|Surround Decoder"/>
      <param field="Mode6" label="Debug" width="75px">
        <options>
           <option label="True" value="Debug"/>
@@ -43,14 +45,14 @@ class Zone:
 
         inputControlOptions = { 
             "LevelActions" : "",
-            "LevelNames"   : "Off|SIRIUS|TUNER|HDMI1|HDMI2|HDMI3|HDMI4|HDMI5|HDMI6|HDMI7|AV1|AV2|AV3|AV4|AV5|AV6|V-AUX|AUDIO1|AUDIO2|DOCK|iPod|Bluetooth|UAW|NET|Rhapsody|SIRIUS InternetRadio|Pandora|Napster|PC|NET RADIO|USB|iPod (USB)",
+            "LevelNames"   : Parameters["Mode3"],
             "LevelOffHidden" : "true",
             "SelectorStyle" : "1" 
         }
 
         dspProgramsOptions = {
             "LevelActions" : "",
-            "LevelNames"   : "Off|Hall in Munich|Hall in Vienna|Chamber|Cellar Club|The Roxy Theatre|The Bottom Line|Sports|Spotify|Action Game|Roleplaying Game|Music Video|Standard|Spectacle|Sci-Fi|Adventure|Drama|Mono Movie|2ch Stereo|7ch Stereo|Surround Decoder",
+            "LevelNames"   : Parameters["Mode4"],
             "LevelOffHidden" : "true",
             "SelectorStyle" : "1"
         }
