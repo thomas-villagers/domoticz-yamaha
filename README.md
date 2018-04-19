@@ -7,7 +7,7 @@ Python plugin for Domoticz to control Yamaha AV Receivers (Aventage Series) via 
 1. Clone repository into your domoticz plugins folder
 ```
 cd domoticz/plugins
-git clone https://github.com/stas-demydiuk/domoticz-yamaha-plugin yamaha-av-receiver
+git clone https://github.com/thomas-villagers/domoticz-yamaha.git yamaha-av-receiver
 ```
 2. Restart domoticz
 3. Go to "Hardware" page and add new item with type "Yamaha AV Receiver"
@@ -19,7 +19,7 @@ Plugin creates 4 devices for Main Zone:
 | Name         | Description                                                              |
 | :---         | :---                                                                     |
 | Media Player | Allows to switch main zone ON/OFF                                        |
-| Volume       | Controls the volume of main zone and allows to to MUTE/UNMUTE            |
+| Volume       | Controls the volume of main zone and allows to MUTE/UNMUTE            |
 | Input        | Controls the input of main zone                                          |
 | DSP Program  | Allows to set DSP program for main zone                                  |
 
