@@ -3,7 +3,7 @@
 # Author: thomas-villagers
 #
 """
-<plugin key="YamahaPlug" name="Yamaha AV Receiver" author="thomasvillagers" version="2.0.0" wikilink="http://www.domoticz.com/wiki/plugins/plugin.html" externallink="https://yamaha.com/products/audio_visual/av_receivers_amps/">
+<plugin key="YamahaPlug" name="Yamaha AV Receiver with Kodi Remote" author="thomasvillagers" version="2.0.0" wikilink="http://www.domoticz.com/wiki/plugins/plugin.html" externallink="https://yamaha.com/products/audio_visual/av_receivers_amps/">
     <params>
      <param field="Address" label="IP Address" width="200px" required="true" default="127.0.0.1"/>
      <param field="Port" label="Port" width="50px" required="true" default="50000"/>
@@ -38,6 +38,35 @@ class Zone:
         self.volumeDeviceUnit = 10 * zoneIndex + 1
         self.inputDeviceUnit = 10 * zoneIndex + 2
         self.dspDeviceUnit = 10 * zoneIndex + 3
+
+        self.remoteKEY ={
+                         "VolumeUp"       : self.zoneKey + ":VOL=Up",
+                         "VolumeDown"     : self.zoneKey + ":VOL=Down",
+                         "Mute"           : self.zoneKey + ":MUTE=On/Off",
+                         "Stop"           : "@MAIN:PLAYBACK=Stop",
+                         "BigStepBack"    : "@MAIN:PLAYBACK=Skip Rev",
+                         "Rewind"         : "@MAIN:PLAYBACK=Skip Rev",
+                         "PlayPause"      : "@MAIN:PLAYBACK=Play",
+                         "FastForward"    : "@MAIN:PLAYBACK=Skip Fwd",
+                         "BigStepForward" : "@MAIN:PLAYBACK=Skip Fwd",
+                         # This below does not work for my RX-V575, I replace it with remote codes
+                         # Please test this on other Yamaha AVs and please fixed it.
+                         "Home"           : "@SYS:REMOTECODE=7A85A0DF", #"@MAIN:LISTMENU=Back to home",
+                         "ContextMenu"    : "@SYS:REMOTECODE=7A856B14", #"@MAIN:LISTMENU=Menu",
+                         "Select"         : "@SYS:REMOTECODE=7A85DE21", #"@MAIN:LISTCURSOR=Sel",
+                         "Back"           : "@SYS:REMOTECODE=7A85AA55", #"@MAIN:LISTCURSOR=Back",
+                         "Up"             : "@SYS:REMOTECODE=7A859D62", #"@MAIN:LISTCURSOR=Up",
+                         "Down"           : "@SYS:REMOTECODE=7A859C63", #"@MAIN:LISTCURSOR=Down",
+                         "Left"           : "@SYS:REMOTECODE=7A859F60", #"@MAIN:LISTCURSOR=Left",
+                         "Right"          : "@SYS:REMOTECODE=7A859E61"  #"@MAIN:LISTCURSOR=Right",
+                         # Not used - does anyone have any idea for this?
+                         #"Info"           : "",
+                         #"Channels"       : "",
+                         #"ChannelUp"      : "",
+                         #"ChannelDown"    : "",
+                         #"ShowSubtitles"  : "",
+                         #"FullScreen"     : ""
+                        }
 
     def checkDevices(self):
         iconName = 'Yamaha'
@@ -127,6 +156,8 @@ class Zone:
                  yncaCommands.append(self.zoneKey + ":PWR=Standby")
             elif (command == "On"): 
                  yncaCommands.append(self.zoneKey + ":PWR=On")
+            elif (command in self.remoteKEY):
+                 yncaCommands.append(self.remoteKEY[command])
 
         if (unit == self.volumeDeviceUnit): # Volume, mute and ON/OFF
             if (command == "Set Level"): 
@@ -298,7 +329,7 @@ class BasePlugin:
 
         for command in yncaCommands:
             self.connection.Send(command + "\r\n")
-                 
+
     def onNotification(self, Data):
         Domoticz.Debug("onNotification: " + str(Data))
 
