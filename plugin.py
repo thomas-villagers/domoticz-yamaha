@@ -418,9 +418,3 @@ def DumpConfigToLog():
         Domoticz.Debug("Device sValue:   '" + Devices[x].sValue + "'")
         Domoticz.Debug("Device LastLevel: " + str(Devices[x].LastLevel)) 
     return
-
-def stringToBase64(s):
-    return base64.b64encode(s.encode('utf-8')).decode("utf-8")
-
-def base64ToString(b):
-    return base64.b64decode(b).decode('utf-8')
