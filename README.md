@@ -20,7 +20,7 @@ git clone https://github.com/thomas-villagers/domoticz-yamaha.git yamaha-av-rece
 | :---           | :---                                                                                                               |
 | Adres IP       | IP Address your Yamaha AV Receiver                                                                                 |
 | Port           | Port to HTTP YNCA Command (If you don't know anything about port forwarding, leave 50000)                          |
-| Zones          | Select zone to controll                                                                                            |
+| Zones          | Select zone to control                                                                                             |
 | Input names    | List of available inputs separated by a pipe - you can limit or change to other, ones supported by your Yamaha.    | 
 | DSP Programs   | List of DSP Programs separated by a pipe - you can limit or change to other, ones supported by your Yamaha.        |
 
