@@ -271,8 +271,8 @@ class BasePlugin:
 
         Domoticz.Debug("onStart called")
 
-        if self.iconName not in Images:
-            Domoticz.Image('icons.zip').Create()
+        #if self.iconName not in Images:
+        Domoticz.Image('icons.zip').Create()
         
         iconID = Images[self.iconName].ID
 
