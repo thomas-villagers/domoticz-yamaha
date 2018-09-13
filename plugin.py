@@ -306,10 +306,10 @@ class BasePlugin:
 
         Domoticz.Debug("onStart called")
 
-        if self.iconName not in Images:
+        if iconName not in Images:
             Domoticz.Image('icons.zip').Create()
 
-        iconID = Images[self.iconName].ID
+        iconID = Images[iconName].ID
 
         self.zones = []
 
