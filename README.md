@@ -14,6 +14,8 @@ git clone https://github.com/thomas-villagers/domoticz-yamaha.git yamaha-av-rece
 2. Restart domoticz
 3. Go to "Hardware" page and add new item with type "Yamaha AV Receiver"
 
+Please note that this plugin needs the "updated" Plugin System which is currently only available in the beta-branch of Domoticz. If you're using the stable version of Domoticz you have to fix the parameters for "onMessage", "onCommand" etc. 
+
 ## Configuration
 
 | Parameter Name | Value                                                                                                              |
