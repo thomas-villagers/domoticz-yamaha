@@ -96,7 +96,7 @@ class Zone:
 
         if self.mediaDeviceUnit not in Devices:
             Domoticz.Debug("Create Media Device - " + self.zoneName)
-            Domoticz.Device(Name=self.zoneName, Unit=self.mediaDeviceUnit, Type=17,  Switchtype=17, Image=iconID, Used=1).Create()   
+            Domoticz.Device(Name=self.zoneName, Unit=self.mediaDeviceUnit, Type=17,  Switchtype=17, Image=iconID, Used=1).Create()
 
         if self.volumeDeviceUnit not in Devices:
             Domoticz.Debug("Create Volume Device - " + self.zoneName)
@@ -186,7 +186,7 @@ class Zone:
                  yncaCommands.append(self.zoneKey + ":MUTE=On")
             elif (command == "On"):
                  yncaCommands.append(self.zoneKey + ":MUTE=Off")
-                
+
         if (unit == self.inputDeviceUnit): # Input selection
             if (level == 0): # Level "Off"
                 yncaCommands.append(self.zoneKey + ":PWR=Standby")
@@ -209,7 +209,7 @@ class Zone:
             else:
                 device = self.getSceneDevice()
                 yncaCommands.append("@MAIN:SCENE=Scene " + str(int(level/10)))
-       
+
         return yncaCommands
 
     def setActive(self, isActive):
@@ -297,14 +297,14 @@ class BasePlugin:
     isConnected = True
     outstandingPings = 0
     nextConnect = 0
-    iconName = 'Yamaha'
 
     def onStart(self):
         if Parameters["Mode6"] == "Debug":
             Domoticz.Debugging(1)
 
         Domoticz.Debug("onStart called")
-        Domoticz.Debug(iconName)
+
+        iconName = 'Yamaha'
 
         if iconName not in Images:
             Domoticz.Image('icons.zip').Create()
@@ -356,7 +356,7 @@ class BasePlugin:
         if (self.isConnected == False):
             self.connection.Connect()
             return
-       
+
         yncaCommands = []
 
         for zone in self.zones:
