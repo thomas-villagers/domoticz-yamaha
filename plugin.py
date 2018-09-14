@@ -27,7 +27,6 @@
 </plugin>
 """
 import Domoticz
-import base64
 
 class Zone:
     def __init__(self, zoneIndex):
@@ -305,6 +304,7 @@ class BasePlugin:
             Domoticz.Debugging(1)
 
         Domoticz.Debug("onStart called")
+        Domoticz.Debug(iconName)
 
         if iconName not in Images:
             Domoticz.Image('icons.zip').Create()
