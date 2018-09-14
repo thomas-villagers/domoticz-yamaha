@@ -438,7 +438,7 @@ def UpdateDevice(Unit, nValue, sValue):
             Devices[Unit].Update(nValue, str(sValue))
     return
 
-    # Generic helper functions
+    # Generic helper functions 
 def DumpConfigToLog():
     for x in Parameters:
         if Parameters[x] != "":
