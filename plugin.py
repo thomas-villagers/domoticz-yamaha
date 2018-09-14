@@ -410,7 +410,7 @@ def onConnect(Connection, Status, Description):
     global _plugin
     _plugin.onConnect(Connection, Status, Description)
 
-def onMessage(Connection, Data, status, extra):
+def onMessage(Connection, Data):
     global _plugin
     _plugin.onMessage(Connection, Data)
 
@@ -438,7 +438,7 @@ def UpdateDevice(Unit, nValue, sValue):
             Devices[Unit].Update(nValue, str(sValue))
     return
 
-    # Generic helper functions
+    # Generic helper functions 
 def DumpConfigToLog():
     for x in Parameters:
         if Parameters[x] != "":
