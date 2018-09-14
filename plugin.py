@@ -410,7 +410,7 @@ def onConnect(Connection, Status, Description):
     global _plugin
     _plugin.onConnect(Connection, Status, Description)
 
-def onMessage(Connection, Data, status, extra):
+def onMessage(Connection, Data):
     global _plugin
     _plugin.onMessage(Connection, Data)
 
