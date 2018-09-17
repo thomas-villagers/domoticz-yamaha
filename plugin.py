@@ -344,12 +344,13 @@ class BasePlugin:
         Domoticz.Debug(strData)
 
         for line in strData.splitlines():
-            arrData = line.split('=')
-            command = arrData[0]
-            value = arrData[1]
+            if line.find('=') > -1:
+                arrData = line.split('=')
+                command = arrData[0]
+                value = arrData[1]
 
-            for zone in self.zones:
-                zone.handleMessage(command, value)
+                for zone in self.zones:
+                    zone.handleMessage(command, value)
 
     def onCommand(self, Unit, Command, Level, Hue):
         Domoticz.Debug("onCommand called for Unit " + str(Unit) + ": Parameter '" + str(Command) + "', Level: " + str(Level) + "', Hue: " + str(Hue))
