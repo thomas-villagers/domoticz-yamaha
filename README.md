@@ -53,4 +53,4 @@ If there is at least one additional zone, plugin creates device to control Party
 
 ## TODO
 
-- [x] Implement scenes selection support
+- [ ] Implement scenes selection support
