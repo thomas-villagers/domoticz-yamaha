@@ -38,7 +38,7 @@ class Zone:
         self.volumeDeviceUnit = 10 * zoneIndex + 1
         self.inputDeviceUnit  = 10 * zoneIndex + 2
         self.dspDeviceUnit    = 10 * zoneIndex + 3
-#        self.sceneDeviceUnit  = 10 * zoneIndex + 4
+        self.sceneDeviceUnit  = 10 * zoneIndex + 4
 
         self.remoteKEY = {
             "VolumeUp"       : self.zoneKey + ":VOL=Up",
@@ -87,16 +87,16 @@ class Zone:
             "SelectorStyle"  : "1"
         }
 
- #       sceneOptions = {
- #           "LevelActions"   : "",
- #           "LevelNames"     : Parameters["Mode4"],
- #           "LevelOffHidden" : "true",
- #           "SelectorStyle"  : "0"
- #       }
+        sceneOptions = {
+            "LevelActions"   : "",
+            "LevelNames"     : Parameters["Mode4"],
+            "LevelOffHidden" : "true",
+            "SelectorStyle"  : "0"
+        }
 
         if self.mediaDeviceUnit not in Devices:
             Domoticz.Debug("Create Media Device - " + self.zoneName)
-            Domoticz.Device(Name=self.zoneName, Unit=self.mediaDeviceUnit, Type=17,  Switchtype=17, Image=iconID, Used=1).Create()
+            Domoticz.Device(Name=self.zoneName, Unit=self.mediaDeviceUnit, Type=17,  Switchtype=17, Image=iconID, Used=1).Create()   
 
         if self.volumeDeviceUnit not in Devices:
             Domoticz.Debug("Create Volume Device - " + self.zoneName)
@@ -110,9 +110,9 @@ class Zone:
             Domoticz.Debug("Create DSP Program Device - " + self.zoneName)
             Domoticz.Device(Name="DSP Program " + self.zoneName, Unit=self.dspDeviceUnit, TypeName="Selector Switch", Options=dspProgramsOptions, Image=iconID, Used=1).Create()
 
-#        if self.sceneDeviceUnit not in Devices:
-#            Domoticz.Debug("Create Scene Device - " + self.zoneName)
-#            Domoticz.Device(Name="Scene " + self.zoneName, Unit=self.sceneDeviceUnit, TypeName="Selector Switch", Options=sceneOptions, Image=iconID, Used=1).Create()
+        if self.sceneDeviceUnit not in Devices:
+            Domoticz.Debug("Create Scene Device - " + self.zoneName)
+            Domoticz.Device(Name="Scene " + self.zoneName, Unit=self.sceneDeviceUnit, TypeName="Selector Switch", Options=sceneOptions, Image=iconID, Used=1).Create()
 
     def getMediaDevice(self):
         return Devices[self.mediaDeviceUnit]
@@ -126,8 +126,8 @@ class Zone:
     def getDspProgramDevice(self):
         return Devices[self.dspDeviceUnit]
 
-#    def getSceneDevice(self):
-#        return Devices[self.sceneDeviceUnit]
+    def getSceneDevice(self):
+        return Devices[self.sceneDeviceUnit]
 
     def getLevelName(self, device, level):
         listLevelNames = device.Options["LevelNames"].split("|")
@@ -186,7 +186,7 @@ class Zone:
                  yncaCommands.append(self.zoneKey + ":MUTE=On")
             elif (command == "On"):
                  yncaCommands.append(self.zoneKey + ":MUTE=Off")
-
+                
         if (unit == self.inputDeviceUnit): # Input selection
             if (level == 0): # Level "Off"
                 yncaCommands.append(self.zoneKey + ":PWR=Standby")
@@ -206,10 +206,10 @@ class Zone:
         if (unit == self.sceneDeviceUnit): # Scene selection
             if (level == 0): # Level "Off"
                 yncaCommands.append(self.zoneKey + ":PWR=Standby")
-#            else:
-#                device = self.getSceneDevice()
-#                yncaCommands.append("@MAIN:SCENE=Scene " + str(int(level/10)))
-
+            else:
+                device = self.getSceneDevice()
+                yncaCommands.append("@MAIN:SCENE=Scene " + str(int(level/10)))
+       
         return yncaCommands
 
     def setActive(self, isActive):
@@ -246,17 +246,17 @@ class Zone:
                     break
                 count += 10
 
-#    def setScene(self, inputName):
-#        device = self.getInputDevice()
+    def setScene(self, inputName):
+        device = self.getInputDevice()
 
-#        if device.Options:
-#            listLevelNames = device.Options["LevelNames"].split("|")
-#            count = 0
-#            for levelName in listLevelNames:
-#                if (levelName == inputName):
-#                    UpdateDevice(self.sceneDeviceUnit, 1, str(int(count)))
-#                    break
-#                count += 10
+        if device.Options:
+            listLevelNames = device.Options["LevelNames"].split("|")
+            count = 0
+            for levelName in listLevelNames:
+                if (levelName == inputName):
+                    UpdateDevice(self.sceneDeviceUnit, 1, str(int(count)))
+                    break
+                count += 10
 
 class PartyMode:
     def __init__(self):
@@ -303,9 +303,9 @@ class BasePlugin:
             Domoticz.Debugging(1)
 
         Domoticz.Debug("onStart called")
-
+        
         iconName = 'Yamaha'
-
+        
         if iconName not in Images:
             Domoticz.Image('icons.zip').Create()
 
@@ -356,7 +356,7 @@ class BasePlugin:
         if (self.isConnected == False):
             self.connection.Connect()
             return
-
+       
         yncaCommands = []
 
         for zone in self.zones:
