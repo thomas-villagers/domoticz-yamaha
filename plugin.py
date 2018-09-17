@@ -38,7 +38,7 @@ class Zone:
         self.volumeDeviceUnit = 10 * zoneIndex + 1
         self.inputDeviceUnit  = 10 * zoneIndex + 2
         self.dspDeviceUnit    = 10 * zoneIndex + 3
-        self.sceneDeviceUnit  = 10 * zoneIndex + 4
+#        self.sceneDeviceUnit  = 10 * zoneIndex + 4
 
         self.remoteKEY = {
             "VolumeUp"       : self.zoneKey + ":VOL=Up",
@@ -87,12 +87,12 @@ class Zone:
             "SelectorStyle"  : "1"
         }
 
-        sceneOptions = {
-            "LevelActions"   : "",
-            "LevelNames"     : Parameters["Mode4"],
-            "LevelOffHidden" : "true",
-            "SelectorStyle"  : "0"
-        }
+ #       sceneOptions = {
+ #           "LevelActions"   : "",
+ #           "LevelNames"     : Parameters["Mode4"],
+ #           "LevelOffHidden" : "true",
+ #           "SelectorStyle"  : "0"
+ #       }
 
         if self.mediaDeviceUnit not in Devices:
             Domoticz.Debug("Create Media Device - " + self.zoneName)
@@ -110,9 +110,9 @@ class Zone:
             Domoticz.Debug("Create DSP Program Device - " + self.zoneName)
             Domoticz.Device(Name="DSP Program " + self.zoneName, Unit=self.dspDeviceUnit, TypeName="Selector Switch", Options=dspProgramsOptions, Image=iconID, Used=1).Create()
 
-        if self.sceneDeviceUnit not in Devices:
-            Domoticz.Debug("Create Scene Device - " + self.zoneName)
-            Domoticz.Device(Name="Scene " + self.zoneName, Unit=self.sceneDeviceUnit, TypeName="Selector Switch", Options=sceneOptions, Image=iconID, Used=1).Create()
+#        if self.sceneDeviceUnit not in Devices:
+#            Domoticz.Debug("Create Scene Device - " + self.zoneName)
+#            Domoticz.Device(Name="Scene " + self.zoneName, Unit=self.sceneDeviceUnit, TypeName="Selector Switch", Options=sceneOptions, Image=iconID, Used=1).Create()
 
     def getMediaDevice(self):
         return Devices[self.mediaDeviceUnit]
@@ -126,8 +126,8 @@ class Zone:
     def getDspProgramDevice(self):
         return Devices[self.dspDeviceUnit]
 
-    def getSceneDevice(self):
-        return Devices[self.sceneDeviceUnit]
+#    def getSceneDevice(self):
+#        return Devices[self.sceneDeviceUnit]
 
     def getLevelName(self, device, level):
         listLevelNames = device.Options["LevelNames"].split("|")
@@ -206,9 +206,9 @@ class Zone:
         if (unit == self.sceneDeviceUnit): # Scene selection
             if (level == 0): # Level "Off"
                 yncaCommands.append(self.zoneKey + ":PWR=Standby")
-            else:
-                device = self.getSceneDevice()
-                yncaCommands.append("@MAIN:SCENE=Scene " + str(int(level/10)))
+#            else:
+#                device = self.getSceneDevice()
+#                yncaCommands.append("@MAIN:SCENE=Scene " + str(int(level/10)))
 
         return yncaCommands
 
@@ -246,17 +246,17 @@ class Zone:
                     break
                 count += 10
 
-    def setScene(self, inputName):
-        device = self.getInputDevice()
+#    def setScene(self, inputName):
+#        device = self.getInputDevice()
 
-        if device.Options:
-            listLevelNames = device.Options["LevelNames"].split("|")
-            count = 0
-            for levelName in listLevelNames:
-                if (levelName == inputName):
-                    UpdateDevice(self.sceneDeviceUnit, 1, str(int(count)))
-                    break
-                count += 10
+#        if device.Options:
+#            listLevelNames = device.Options["LevelNames"].split("|")
+#            count = 0
+#            for levelName in listLevelNames:
+#                if (levelName == inputName):
+#                    UpdateDevice(self.sceneDeviceUnit, 1, str(int(count)))
+#                    break
+#                count += 10
 
 class PartyMode:
     def __init__(self):
@@ -344,13 +344,12 @@ class BasePlugin:
         Domoticz.Debug(strData)
 
         for line in strData.splitlines():
-            if line.find('=') > -1:
-                arrData = line.split('=')
-                command = arrData[0]
-                value = arrData[1]
+            arrData = line.split('=')
+            command = arrData[0]
+            value = arrData[1]
 
-                for zone in self.zones:
-                    zone.handleMessage(command, value)
+            for zone in self.zones:
+                zone.handleMessage(command, value)
 
     def onCommand(self, Unit, Command, Level, Hue):
         Domoticz.Debug("onCommand called for Unit " + str(Unit) + ": Parameter '" + str(Command) + "', Level: " + str(Level) + "', Hue: " + str(Hue))
