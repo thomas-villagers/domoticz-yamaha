@@ -9,7 +9,7 @@ Python plugin for Domoticz to control Yamaha AV Receivers (Aventage Series) via 
 1. Clone repository into your domoticz plugins folder
 ```
 cd domoticz/plugins
-git clone https://github.com/thomas-villagers/domoticz-yamaha.git yamaha-av-receiver
+git clone https://github.com/z1mEk/domoticz-yamaha.git yamaha-av-receiver
 ```
 2. Restart domoticz
 3. Go to "Hardware" page and add new item with type "Yamaha AV Receiver"
@@ -53,4 +53,4 @@ If there is at least one additional zone, plugin creates device to control Party
 
 ## TODO
 
-[-] Implement scenes selection support
+-[-] Implement scenes selection support
