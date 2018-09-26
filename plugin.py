@@ -27,7 +27,6 @@
 </plugin>
 """
 import Domoticz
-import base64
 
 class Zone:
     def __init__(self, zoneIndex):
@@ -298,14 +297,15 @@ class BasePlugin:
     isConnected = True
     outstandingPings = 0
     nextConnect = 0
-    iconName = 'Yamaha'
 
     def onStart(self):
         if Parameters["Mode6"] == "Debug":
             Domoticz.Debugging(1)
 
         Domoticz.Debug("onStart called")
-
+        
+        iconName = 'Yamaha'
+        
         if iconName not in Images:
             Domoticz.Image('icons.zip').Create()
 
