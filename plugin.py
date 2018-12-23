@@ -3,7 +3,7 @@
 # Author: thomas-villagers
 #
 """
-<plugin key="YamahaPlug" name="Yamaha AV Receiver with Kodi Remote" author="thomasvillagers" version="2.0.0" wikilink="http://www.domoticz.com/wiki/plugins/plugin.html" externallink="https://yamaha.com/products/audio_visual/av_receivers_amps/">
+<plugin key="YamahaPlug" name="Yamaha AV Receiver with Kodi Remote" author="thomasvillagers" version="2.0.1" wikilink="http://www.domoticz.com/wiki/plugins/plugin.html" externallink="https://yamaha.com/products/audio_visual/av_receivers_amps/">
     <params>
      <param field="Address" label="IP Address" width="200px" required="true" default="127.0.0.1"/>
      <param field="Port" label="Port" width="50px" required="true" default="50000"/>
@@ -44,29 +44,27 @@ class Zone:
             "VolumeUp"       : self.zoneKey + ":VOL=Up",
             "VolumeDown"     : self.zoneKey + ":VOL=Down",
             "Mute"           : self.zoneKey + ":MUTE=On/Off",
-            "Stop"           : "@MAIN:PLAYBACK=Stop",
-            "BigStepBack"    : "@MAIN:PLAYBACK=Skip Rev",
-            "Rewind"         : "@MAIN:PLAYBACK=Skip Rev",
-            "PlayPause"      : "@MAIN:PLAYBACK=Play",
-            "FastForward"    : "@MAIN:PLAYBACK=Skip Fwd",
-            "BigStepForward" : "@MAIN:PLAYBACK=Skip Fwd",
-            # This below does not work for my RX-V575, I replace it with remote codes
-            # Please test this on other Yamaha AVs and please fixed it.
-            "Home"           : "@SYS:REMOTECODE=7A85A0DF", #"@MAIN:LISTMENU=Back to home",
-            "ContextMenu"    : "@SYS:REMOTECODE=7A856B14", #"@MAIN:LISTMENU=Menu",
-            "Select"         : "@SYS:REMOTECODE=7A85DE21", #"@MAIN:LISTCURSOR=Sel",
-            "Back"           : "@SYS:REMOTECODE=7A85AA55", #"@MAIN:LISTCURSOR=Back",
-            "Up"             : "@SYS:REMOTECODE=7A859D62", #"@MAIN:LISTCURSOR=Up",
-            "Down"           : "@SYS:REMOTECODE=7A859C63", #"@MAIN:LISTCURSOR=Down",
-            "Left"           : "@SYS:REMOTECODE=7A859F60", #"@MAIN:LISTCURSOR=Left",
-            "Right"          : "@SYS:REMOTECODE=7A859E61"  #"@MAIN:LISTCURSOR=Right",
+            "Stop"           : self.zoneKey + ":PLAYBACK=Stop",
+            "BigStepBack"    : self.zoneKey + ":PLAYBACK=Skip Rev",
+            "Rewind"         : self.zoneKey + ":PLAYBACK=Skip Rev",
+            "PlayPause"      : self.zoneKey + ":PLAYBACK=Play",
+            "FastForward"    : self.zoneKey + ":PLAYBACK=Skip Fwd",
+            "BigStepForward" : self.zoneKey + ":PLAYBACK=Skip Fwd",
+            "Home"           : "@MAIN:MENU=Top Menu",
+            "ContextMenu"    : "@MAIN:MENU=Option",
+            "Info"           : "@MAIN:MENU=Display",
+            "Select"         : "@MAIN:CURSOR=Sel",
+            "Back"           : "@MAIN:CURSOR=Return",
+            "Up"             : "@MAIN:CURSOR=Up",
+            "Down"           : "@MAIN:CURSOR=Down",
+            "Left"           : "@MAIN:CURSOR=Left",
+            "Right"          : "@MAIN:CURSOR=Right",
+            "FullScreen"     : "@MAIN:MENU=On Screen"
             # Not used - does anyone have any idea for this?
-            #"Info"           : "",
             #"Channels"       : "",
             #"ChannelUp"      : "",
             #"ChannelDown"    : "",
             #"ShowSubtitles"  : "",
-            #"FullScreen"     : ""
         }
 
     def checkDevices(self):
@@ -83,7 +81,7 @@ class Zone:
         dspProgramsOptions = {
             "LevelActions"   : "",
             "LevelNames"     : Parameters["Mode3"],
-            "LevelOffHidden" : "true",
+            "LevelOffHidden" : "false",
             "SelectorStyle"  : "1"
         }
 
@@ -154,12 +152,16 @@ class Zone:
             UpdateDevice(self.volumeDeviceUnit, nValue, self.getVolumeDevice().sValue)
         elif (self.zoneKey == '@MAIN' and command == 'SOUNDPRG'):
              self.setDspProgram(value)
+        elif (self.zoneKey == '@MAIN' and command == 'STRAIGHT' and value == "On"):
+            self.setDspProgram('Off')
+
 
     def getYncaStatusCommands(self):
         yncaCommands = [self.zoneKey + ":PWR=?", self.zoneKey + ":VOL=?", self.zoneKey + ":INP=?", self.zoneKey + ":MUTE=?"]
 
         if (self.zoneIndex == 1):
             yncaCommands.append(self.zoneKey + ":SOUNDPRG=?")
+            yncaCommands.append(self.zoneKey + ":STRAIGHT=?")
 
         return yncaCommands
 
@@ -196,8 +198,8 @@ class Zone:
                 yncaCommands.append(self.zoneKey + ":INP=" + inputName)
 
         if (unit == self.dspDeviceUnit): # DSP Program selection
-            if (level == 0): # Level "Off"
-                yncaCommands.append(self.zoneKey + ":PWR=Standby")
+            if (level == 0): # Straight mode
+                yncaCommands.append(self.zoneKey + ":STRAIGHT=On")
             else:
                 device = self.getDspProgramDevice()
                 programName = self.getLevelName(device, level)
