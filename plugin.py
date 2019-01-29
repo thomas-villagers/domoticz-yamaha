@@ -3,7 +3,7 @@
 # Author: thomas-villagers
 #
 """
-<plugin key="YamahaPlug" name="Yamaha AV Receiver with Kodi Remote" author="thomasvillagers" version="2.0.1" wikilink="http://www.domoticz.com/wiki/plugins/plugin.html" externallink="https://yamaha.com/products/audio_visual/av_receivers_amps/">
+<plugin key="YamahaPlug" name="Yamaha AV Receiver with Kodi Remote" author="thomasvillagers" version="2.0.2" wikilink="http://www.domoticz.com/wiki/plugins/plugin.html" externallink="https://yamaha.com/products/audio_visual/av_receivers_amps/">
     <params>
      <param field="Address" label="IP Address" width="200px" required="true" default="127.0.0.1"/>
      <param field="Port" label="Port" width="50px" required="true" default="50000"/>
@@ -39,6 +39,7 @@ class Zone:
         self.inputDeviceUnit  = 10 * zoneIndex + 2
         self.dspDeviceUnit    = 10 * zoneIndex + 3
         self.sceneDeviceUnit  = 10 * zoneIndex + 4
+        self.straightModeDeviceUnit = 10 * zoneIndex + 5
 
         self.remoteKEY = {
             "VolumeUp"       : self.zoneKey + ":VOL=Up",
@@ -81,7 +82,7 @@ class Zone:
         dspProgramsOptions = {
             "LevelActions"   : "",
             "LevelNames"     : Parameters["Mode3"],
-            "LevelOffHidden" : "false",
+            "LevelOffHidden" : "true",
             "SelectorStyle"  : "1"
         }
 
@@ -106,11 +107,15 @@ class Zone:
 
         if self.zoneIndex == 1 and self.dspDeviceUnit not in Devices:
             Domoticz.Debug("Create DSP Program Device - " + self.zoneName)
-            Domoticz.Device(Name="DSP Program " + self.zoneName, Unit=self.dspDeviceUnit, TypeName="Selector Switch", Options=dspProgramsOptions, Image=iconID, Used=1).Create()
+            Domoticz.Device(Name="DSP Program", Unit=self.dspDeviceUnit, TypeName="Selector Switch", Options=dspProgramsOptions, Image=iconID, Used=1).Create()
 
         if self.sceneDeviceUnit not in Devices:
             Domoticz.Debug("Create Scene Device - " + self.zoneName)
             Domoticz.Device(Name="Scene " + self.zoneName, Unit=self.sceneDeviceUnit, TypeName="Selector Switch", Options=sceneOptions, Image=iconID, Used=1).Create()
+
+        if self.zoneIndex == 1 and self.straightModeDeviceUnit not in Devices:
+            Domoticz.Debug("Create Straight Mode Device - " + self.zoneName)
+            Domoticz.Device(Name="Straight Mode", Unit=self.straightModeDeviceUnit, TypeName="Switch", Image=iconID).Create()
 
     def getMediaDevice(self):
         return Devices[self.mediaDeviceUnit]
@@ -152,8 +157,8 @@ class Zone:
             UpdateDevice(self.volumeDeviceUnit, nValue, self.getVolumeDevice().sValue)
         elif (self.zoneKey == '@MAIN' and command == 'SOUNDPRG'):
              self.setDspProgram(value)
-        elif (self.zoneKey == '@MAIN' and command == 'STRAIGHT' and value == "On"):
-            self.setDspProgram('Off')
+        elif (self.zoneKey == '@MAIN' and command == 'STRAIGHT'):
+            self.setStraightModeStatus(value == 'On')
 
 
     def getYncaStatusCommands(self):
@@ -198,12 +203,15 @@ class Zone:
                 yncaCommands.append(self.zoneKey + ":INP=" + inputName)
 
         if (unit == self.dspDeviceUnit): # DSP Program selection
-            if (level == 0): # Straight mode
+            if (command == "Off" or level == 0): # Straight mode
                 yncaCommands.append(self.zoneKey + ":STRAIGHT=On")
             else:
                 device = self.getDspProgramDevice()
                 programName = self.getLevelName(device, level)
                 yncaCommands.append(self.zoneKey + ":SOUNDPRG=" + programName)
+
+        if (unit == self.straightModeDeviceUnit): # Straight Mode
+            yncaCommands.append(self.zoneKey + ":STRAIGHT=" + command)
 
         if (unit == self.sceneDeviceUnit): # Scene selection
             if (level == 0): # Level "Off"
@@ -232,9 +240,15 @@ class Zone:
             count = 0
             for levelName in listLevelNames:
                 if (levelName == programName):
-                    UpdateDevice(self.dspDeviceUnit, 1, str(int(count)))
+                    if (device.sValue != str(count)):
+                        UpdateDevice(self.dspDeviceUnit, device.nValue, str(count))
                     break
+
                 count += 10
+
+    def setStraightModeStatus(self, isEnabled):
+        nValue = 1 if isEnabled else 0
+        UpdateDevice(self.straightModeDeviceUnit, nValue, str(nValue))
 
     def setInput(self, inputName):
         device = self.getInputDevice()
