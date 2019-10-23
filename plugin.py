@@ -70,7 +70,9 @@ class Zone:
 
     def checkDevices(self):
         iconName = 'Yamaha'
-        iconID = Images[iconName].ID
+
+        if iconName in Images:
+            iconID = Images[iconName].ID
 
         inputControlOptions = {
             "LevelActions"   : "",
@@ -325,7 +327,8 @@ class BasePlugin:
         if iconName not in Images:
             Domoticz.Image('icons.zip').Create()
 
-        iconID = Images[iconName].ID
+        if iconName in Images:
+            iconID = Images[iconName].ID
 
         self.zones = []
 
